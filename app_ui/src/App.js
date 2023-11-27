@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Plot  from 'react-plotly.js';
@@ -67,6 +66,7 @@ export function PlayerStatsGrid(){
   return(
     <div>
       <Boxplot/>
+      <BarChart/>
     </div>
   );
 }
@@ -116,7 +116,7 @@ function Boxplot() {
 
   return (
     <div>
-      <h1>Boxplot of Bowler Economy in {year}</h1>
+      <h1>Boxplot of Bowler Economy in IPL {year}</h1>
       <YearSlider onChange={handleSliderChange} year={year} />
       {data && (
           <Plot
@@ -130,8 +130,83 @@ function Boxplot() {
             layout={{ width: 600, height: 500, title: 'Bowler Economy Boxplot' }}
           />
         )}
+        <h6>Note: minimum overs bowled is 10 overs</h6>
     </div>
   );
+}
+
+function BarChart() {
+
+  const [year, setYear] = useState(2008);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://127.0.0.1:5000/top_run_scorers?year=${year}`);
+        setData(response.data);
+      } catch (error) {
+        console.error('Error fetching data', error);
+      }
+    };
+    
+    fetchData();
+  }, [year]);
+
+  // const players = Object.keys(data);
+  // const runs = Object.values(data);
+  const players = data.map(item => item.player);
+  const runs = data.map(item => item.runs);
+  // const colors = players.map(() => `#${Math.floor(Math.random()*16777215).toString(16)}`);
+  const interpolateColor = (value, min, max) => {
+    const ratio = (value - min) / (max - min);
+    // Interpolate between red (255,0,0) and yellow (255,255,0)
+    const g = 255 - Math.round(255 * ratio);
+    return `rgb(255,${g},0)`;
+  };
+
+  // Calculate min and max for runs to scale the colors appropriately
+  const minRuns = Math.min(...runs);
+  const maxRuns = Math.max(...runs);
+
+  // Assign a color to each bar
+  const colors = runs.map(run => interpolateColor(run, minRuns, maxRuns));
+  const handleSliderChange = (event, newValue) => {
+    setYear(newValue);
+  };
+  return (
+    <div>
+      <h1>Barchart of Top Run Scorers in IPL {year}</h1>
+      <YearSlider onChange={handleSliderChange} year={year} />
+      {data && (
+          <Plot
+            data={[
+              {
+                x: players,
+                y: runs,
+                type: 'bar',
+                name: 'top run scorers',
+                marker: {
+                  color: colors, // Apply the colors here
+                },
+              },
+            ]}
+            layout={{ 
+              width: 600, 
+              height: 500, 
+              xaxis: {
+              title: 'Cricket Players',
+              automargin: true,
+            },
+            yaxis: {
+              title: 'Runs',
+            } }}
+          />
+        )}
+    </div>
+  );
+
+  
 }
 
 function TeamStatsGrid() {

@@ -10,12 +10,14 @@ player_stats = '/Users/ramsankar/Documents/courses/CSCE_679/IPL_Analytics/data/p
 @app.route('/bowler_economy', methods=['GET'])
 def bowler_economy():
     year = int(request.args.get('year'))
-    response = None
+    response = []
     with open(player_stats+'bowler_metrics.pkl','rb') as bef:
         bowler_stats = pickle.load(bef)
         if year not in bowler_stats:
             return jsonify({'error': f'Data not available for the year {year}'}), 404
-        response = [round(bowler_stats[year][p]['economy'],2) for p in bowler_stats[year]]
+        for p in bowler_stats[year]:
+            if bowler_stats[year][p]['balls_bowled'] > 60:
+                response += [bowler_stats[year][p]['economy']]
     return jsonify(response)
 
 #barchart 
@@ -29,7 +31,8 @@ def top_run_scorers():
             return jsonify({'error': f'Data not available for the year {year}'}), 404
         runs = {p : batsman_stats[year][p]['runs'] for p in batsman_stats[year]}
         top5 = sorted(runs.keys(), key  = lambda x: runs[x], reverse = True)[:5]
-        response = {p: runs[p] for p in top5}
+        response = [{'player': p, 'runs' : runs[p]} for p in top5]
+        print(response)
     return jsonify(response)
 
 #barchart
