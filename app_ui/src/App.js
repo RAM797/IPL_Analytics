@@ -40,6 +40,8 @@ function App() {
         {activeTab === 'Team Stats' && <TeamStatsGrid />}
         {activeTab === 'Match Stats' && <MatchStatsGrid />}
       </div>
+      <link rel="stylesheet" type="text/css" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" />
+      <h6>Made with <i class="icon ion-heart"></i> using chatGPT</h6>
     </div>
   );
 }
@@ -64,9 +66,9 @@ function valueLabelFormat(value) {
 
 export function PlayerStatsGrid(){
   return(
-    <div>
+    <div className='grid-container'>
       <Boxplot/>
-      <BarChart/>
+      <BarChartWrapper/>
     </div>
   );
 }
@@ -116,7 +118,7 @@ function Boxplot() {
 
   return (
     <div>
-      <h1>Boxplot of Bowler Economy in IPL {year}</h1>
+      <h2>Boxplot of Bowler Economy in IPL {year}</h2>
       <YearSlider onChange={handleSliderChange} year={year} />
       {data && (
           <Plot
@@ -127,7 +129,7 @@ function Boxplot() {
                 name: 'Bowler Economy',
               },
             ]}
-            layout={{ width: 600, height: 500, title: 'Bowler Economy Boxplot' }}
+            layout={{ width: 500, height: 400, title: 'Bowler Economy Boxplot' }}
           />
         )}
         <h6>Note: minimum overs bowled is 10 overs</h6>
@@ -135,15 +137,28 @@ function Boxplot() {
   );
 }
 
-function BarChart() {
+function BarChartWrapper() {
 
   const [year, setYear] = useState(2008);
   const [data, setData] = useState([]);
+  const [showWicketTakers, setShowWicketTakers] = useState(false);
+ 
+  const toggleData = () => {
+    setShowWicketTakers(!showWicketTakers);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:5000/top_run_scorers?year=${year}`);
+        let response
+        // console.log(showWicketTakers);
+        if (showWicketTakers) {
+          // Fetch data for wicket takers
+          response = await axios.get(`http://127.0.0.1:5000/top_wicket_takers?year=${year}`);
+        } else {
+          // Fetch data for run scorers
+          response = await axios.get(`http://127.0.0.1:5000/top_run_scorers?year=${year}`);
+        }
         setData(response.data);
       } catch (error) {
         console.error('Error fetching data', error);
@@ -151,12 +166,23 @@ function BarChart() {
     };
     
     fetchData();
-  }, [year]);
+  }, [showWicketTakers,year]);
 
   // const players = Object.keys(data);
   // const runs = Object.values(data);
+  //Refactor this later
   const players = data.map(item => item.player);
-  const runs = data.map(item => item.runs);
+  let metric, values
+  if (showWicketTakers)
+  {
+    values  = data.map(item => item.wickets);
+    metric = "wickets";
+  }
+  else
+  {
+    values = data.map(item => item.runs);
+    metric = "runs";
+  }
   // const colors = players.map(() => `#${Math.floor(Math.random()*16777215).toString(16)}`);
   const interpolateColor = (value, min, max) => {
     const ratio = (value - min) / (max - min);
@@ -166,47 +192,66 @@ function BarChart() {
   };
 
   // Calculate min and max for runs to scale the colors appropriately
-  const minRuns = Math.min(...runs);
-  const maxRuns = Math.max(...runs);
+  const minValues = Math.min(...values);
+  const maxValues = Math.max(...values);
 
   // Assign a color to each bar
-  const colors = runs.map(run => interpolateColor(run, minRuns, maxRuns));
+  const colors = values.map(value => interpolateColor(value, minValues, maxValues));
   const handleSliderChange = (event, newValue) => {
     setYear(newValue);
   };
   return (
     <div>
-      <h1>Barchart of Top Run Scorers in IPL {year}</h1>
-      <YearSlider onChange={handleSliderChange} year={year} />
-      {data && (
-          <Plot
-            data={[
-              {
-                x: players,
-                y: runs,
-                type: 'bar',
-                name: 'top run scorers',
-                marker: {
-                  color: colors, // Apply the colors here
-                },
-              },
-            ]}
-            layout={{ 
-              width: 600, 
-              height: 500, 
-              xaxis: {
-              title: 'Cricket Players',
-              automargin: true,
-            },
-            yaxis: {
-              title: 'Runs',
-            } }}
-          />
+      
+      {showWicketTakers ? (
+          <h2>Barchart of Top Wicket Takers in IPL {year}</h2>
+        ): 
+        (
+          <h2>Barchart of Top Run Scorers in IPL {year}</h2>
         )}
+      <YearSlider onChange={handleSliderChange} year={year} />
+      <button onClick={toggleData} style = {{marginTop: 20}}>
+        {showWicketTakers ? 'Show Run Scorers' : 'Show Wicket Takers'}
+      </button>
+      
+      <BarChart
+          players = {players}
+          metric =  {metric}
+          values = {values}
+          colors = {colors}/>
     </div>
   );
 
   
+}
+
+function BarChart({players, metric, values,  colors})
+{
+  return(
+    <Plot
+      data={[
+        {
+          x: players,
+          y: values,
+          type: 'bar',
+          name: 'top players',
+          marker: {
+            color: colors, // Apply the colors here
+          },
+        },
+      ]}
+      layout={{ 
+        width: 600, 
+        height: 450, 
+        xaxis: {
+        title: 'Cricket Player',
+        automargin: true,
+      },
+      yaxis: {
+        title: {metric},
+      } }}
+    />
+  );
 }
 
 function TeamStatsGrid() {

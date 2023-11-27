@@ -46,7 +46,7 @@ def top_wicket_takers():
             return jsonify({'error': f'Data not available for the year {year}'}), 404
         wickets = {p : bowler_stats[year][p]['wickets_taken'] for p in bowler_stats[year]}
         top5 = sorted(wickets.keys(), key  = lambda x: wickets[x], reverse = True)[:5]
-        response = {p: wickets[p] for p in top5}
+        response = [{'player': p, 'wickets' : wickets[p]} for p in top5]
     return jsonify(response)
     
 # scatterplot matrix data

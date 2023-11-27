@@ -52,6 +52,13 @@ button.active {
   justify-content: space-between; /* Add this line to distribute charts evenly */
 }
 
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two equal columns */
+  gap: 10px; /* Optional: space between columns */
+  width: 100%; /* Take full width of the parent */
+  /* Add additional styling as needed */
+}
  /* .grid-item {
   flex: 0 1 calc(50% - 20px); 
   margin: 10px;
