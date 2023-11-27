@@ -1,9 +1,10 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import pickle
 app = Flask(__name__)
-
+CORS(app)
 # Sample data (replace this with your actual data)
-player_stats = 'data/player_stats/'
+player_stats = '/Users/ramsankar/Documents/courses/CSCE_679/IPL_Analytics/data/player_stats/'
 
 # boxplot data
 @app.route('/bowler_economy', methods=['GET'])

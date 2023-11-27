@@ -1,7 +1,9 @@
-// src/App.js
 
-import React, { useState } from 'react';
-import Chart from 'chart.js/auto';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Plot  from 'react-plotly.js';
+import Box from '@mui/material/Box';
+import Slider from '@mui/material/Slider';
 import './App.css';
 
 function App() {
@@ -42,60 +44,92 @@ function App() {
     </div>
   );
 }
+const marks = [
+  {
+    value: 2008,
+    label: '2008',
+  },
+  {
+    value: 2022,
+    label: '2022',
+  },
+];
 
-export function PlayerStatsGrid() {
-  // Generate random data for the bar charts
-  const generateRandomData = () => {
-    return Array.from({ length: 5 }, () => Math.floor(Math.random() * 100));
-  };
+function valuetext(value) {
+  return `${value}`;
+}
 
-  // Create a function to render a bar chart
-  const renderBarChart = (canvas, data) => {
-    const ctx = canvas.getContext('2d');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Category 1', 'Category 2', 'Category 3', 'Category 4', 'Category 5'],
-        datasets: [
-          {
-            label: 'Data',
-            data: data,
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-      },
-    });
+function valueLabelFormat(value) {
+  return value;
+}
+
+export function PlayerStatsGrid(){
+  return(
+    <div>
+      <Boxplot/>
+    </div>
+  );
+}
+
+function YearSlider({ onChange, year }) {
+  return (
+    <Box sx={{ width: 300, margin: 'auto' }}> {/* Center the slider */}
+      <div style={{ textAlign: 'center', marginBottom: '10px' }}>
+        Year {/* Adding label above the slider */}
+      </div>
+      <Slider
+        aria-label="Year selection"
+        valueLabelFormat={valueLabelFormat}
+        getAriaValueText={valuetext}
+        step={1}
+        valueLabelDisplay="auto"
+        marks={marks}
+        min={2008}
+        max={2022}
+        value={year}
+        onChange={onChange} // Use the passed onChange function
+      />
+    </Box>
+  );
+}
+
+function Boxplot() {
+  const [year, setYear] = useState(2008);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://127.0.0.1:5000/bowler_economy?year=${year}`);
+        setData(response.data);
+      } catch (error) {
+        console.error('Error fetching data', error);
+      }
+    };
+    
+    fetchData();
+  }, [year]);
+
+  const handleSliderChange = (event, newValue) => {
+    setYear(newValue);
   };
 
   return (
-    <div className="player-stats-grid">
-      {[0, 1, 2, 3].map((gridIndex) => (
-        <div key={gridIndex} className="grid-item">
-          <canvas
-            id={`chart-${gridIndex}`}
-            width="400"
-            height="200"
-            ref={(canvas) => {
-              // Render the chart on the canvas element
-              if (canvas) {
-                const data = generateRandomData();
-                renderBarChart(canvas, data);
-              }
-            }}
-          ></canvas>
-        </div>
-      ))}
+    <div>
+      <h1>Boxplot of Bowler Economy in {year}</h1>
+      <YearSlider onChange={handleSliderChange} year={year} />
+      {data && (
+          <Plot
+            data={[
+              {
+                y: data,
+                type: 'box',
+                name: 'Bowler Economy',
+              },
+            ]}
+            layout={{ width: 600, height: 500, title: 'Bowler Economy Boxplot' }}
+          />
+        )}
     </div>
   );
 }
