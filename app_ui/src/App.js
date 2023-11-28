@@ -66,9 +66,12 @@ function valueLabelFormat(value) {
 
 export function PlayerStatsGrid(){
   return(
-    <div className='grid-container'>
-      <Boxplot/>
-      <BarChartWrapper/>
+    <div>
+      <div className='grid-container'>
+        <Boxplot/>
+        <BarChartWrapper/>
+      </div>
+    <LineGraph/>
     </div>
   );
 }
@@ -187,8 +190,9 @@ function BarChartWrapper() {
   const interpolateColor = (value, min, max) => {
     const ratio = (value - min) / (max - min);
     // Interpolate between red (255,0,0) and yellow (255,255,0)
-    const g = 255 - Math.round(255 * ratio);
-    return `rgb(255,${g},0)`;
+    const g = 220 - Math.round(255 * ratio);
+    const b = 30;
+    return `rgb(225,${g},${b})`;
   };
 
   // Calculate min and max for runs to scale the colors appropriately
@@ -209,11 +213,13 @@ function BarChartWrapper() {
         (
           <h2>Barchart of Top Run Scorers in IPL {year}</h2>
         )}
-      <YearSlider onChange={handleSliderChange} year={year} />
-      <button onClick={toggleData} style = {{marginTop: 20}}>
-        {showWicketTakers ? 'Show Run Scorers' : 'Show Wicket Takers'}
-      </button>
-      
+    
+      <div>
+        <YearSlider onChange={handleSliderChange} year={year} />
+        <button onClick={toggleData} >
+          {showWicketTakers ? 'Show Run Scorers' : 'Show Wicket Takers'}
+        </button>
+      </div>
       <BarChart
           players = {players}
           metric =  {metric}
@@ -253,6 +259,72 @@ function BarChart({players, metric, values,  colors})
     />
   );
 }
+
+function LineGraph()
+{
+
+  const [year, setYear] = useState(2008);
+  const [data, setData] = useState([]);
+ 
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let response
+        // console.log(showWicketTakers);
+        response = await axios.get(`http://127.0.0.1:5000/top_strike_rates?year=${year}`);  
+        setData(response.data);
+      } catch (error) {
+        console.error('Error fetching data', error);
+      }
+    };
+    
+    fetchData();
+  }, [year]);
+  const plotData = Object.keys(data).map(player => {
+    return {
+      type: 'scatter',
+      mode: 'lines+markers',
+      name: player,
+      x: data[player].map((_, index) => `Match ${index + 1}`),
+      y: data[player]
+    };
+  });
+  const colors = ["red","orange","green","yellow","blue"]
+  const handleSliderChange = (event, newValue) => {
+    setYear(newValue);
+  };
+  return (
+    <div>
+    <div>
+      <h2>Multiline graph of Top Strike rate players in IPL {year}</h2>
+      <YearSlider onChange={handleSliderChange} year={year} />
+    </div>
+      <Plot
+        data={plotData}
+        layout={{
+          width: 720,
+          height: 440,
+          title: 'Strike Rate of Players Across Matches',
+          color: colors,
+          xaxis: {
+            title: 'Match'
+          },
+          yaxis: {
+            title: 'Strike Rate'
+          }
+          
+        }}
+      />
+    </div>
+  );
+}
+
+  // const players = Object.keys(data);
+  // const runs = Object.values(data);
+  //Refactor this laterr
+  
 
 function TeamStatsGrid() {
   // Implement the Team Stats grid here
