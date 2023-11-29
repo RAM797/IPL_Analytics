@@ -60,6 +60,7 @@ function LineGraph()
           
         }}
       />
+      <h6>Note: minimum runs scored is 100</h6>
     </div>
   );
 }

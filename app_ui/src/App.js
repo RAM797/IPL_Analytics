@@ -2,6 +2,8 @@ import React, { useState} from 'react';
 import Boxplot from './boxplot';
 import BarChartWrapper from './barchart';
 import LineGraph from './linegraph';
+import ScatterPlotMatrix from './scatterplot';
+import GroupedBarChart from './groupedBarchart';
 import './App.css';
 
 function App() {
@@ -54,16 +56,19 @@ export function PlayerStatsGrid(){
         <BarChartWrapper/>
       </div>
     <LineGraph/>
+    <ScatterPlotMatrix/>
     </div>
   );
 }
 
-  
-
-function TeamStatsGrid() {
-  // Implement the Team Stats grid here
+export function TeamStatsGrid(){
+  return(
+    <div>
+      <GroupedBarChart/>
+    </div>
+  );
 }
-
+  
 function MatchStatsGrid() {
   // Implement the Match Stats grid here
 }

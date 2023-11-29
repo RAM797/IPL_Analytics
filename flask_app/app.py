@@ -5,7 +5,7 @@ app = Flask(__name__)
 CORS(app)
 # Sample data (replace this with your actual data)
 player_stats = '/Users/ramsankar/Documents/courses/CSCE_679/IPL_Analytics/data/player_stats/'
-
+team_stats = '/Users/ramsankar/Documents/courses/CSCE_679/IPL_Analytics/data/team_stats/'
 # boxplot data
 @app.route('/bowler_economy', methods=['GET'])
 def bowler_economy():
@@ -52,12 +52,24 @@ def top_wicket_takers():
 # scatterplot matrix data
 @app.route('/bowler_metrics', methods=['GET'])
 def bowler_metrics():
-    return jsonify(None)
+    year = int(request.args.get('year'))
+    response = None
+    with open(player_stats+'bowler_metrics.pkl','rb') as tsf:
+        bowler_stats = pickle.load(tsf)
+        if year not in bowler_stats:
+            return jsonify({'error': f'Data not available for the year {year}'}), 404
+    return jsonify(bowler_stats[year])
 
 # scatterplot matrix data
 @app.route('/batsman_metrics', methods=['GET'])
 def batsman_metrics():
-    return jsonify(None)
+    year = int(request.args.get('year'))
+    response = None
+    with open(player_stats+'batsman_metrics.pkl','rb') as tsf:
+        batsman_stats = pickle.load(tsf)
+        if year not in batsman_stats:
+            return jsonify({'error': f'Data not available for the year {year}'}), 404
+    return jsonify(batsman_stats[year])
 
 
 # multi line graph data
@@ -74,7 +86,12 @@ def top_strike_tates():
     
 
 
-
+@app.route('/championships', methods=['GET'])
+def championships():
+    response = {}
+    with open(team_stats +'championships.pkl','rb') as cp:
+        response = pickle.load(cp)
+    return jsonify(response)
 
 if __name__ == '__main__':
     app.run(debug=True)
