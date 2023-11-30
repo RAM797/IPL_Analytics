@@ -37,7 +37,7 @@ function Boxplot() {
                   name: 'Bowler Economy',
                 },
               ]}
-              layout={{ width: 500, height: 400, title: 'Bowler Economy Boxplot' }}
+              layout={{ width: 500, height: 500 }}
             />
           )}
           <h6>Note: minimum overs bowled is 10 overs</h6>

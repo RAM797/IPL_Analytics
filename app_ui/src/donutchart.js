@@ -26,7 +26,7 @@ function Donutchart() {
   
     return (
       <div>
-        <h2>Donut chart- Types of dismisals in {year}</h2>
+        <h2>Donut Chart of Dismissals in IPL {year}</h2>
         <YearSlider onChange={handleSliderChange} year={year} />
         {data && (
             <Plot
@@ -38,7 +38,7 @@ function Donutchart() {
                     hole:0.4,
                 },
               ]}
-              layout={{ width: 500, height: 400, title: 'Dismisal Donut Chart'}}
+              layout={{ width: 500, height: 400}}
             />
           )}
       </div>

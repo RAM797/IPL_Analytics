@@ -36,7 +36,10 @@ function PopulationPyramid()
 
   return (
     <div>
-        <YearSlider onChange={handleSliderChange} year={year} />
+        <div>
+          <h2>Population Pyramid of Wins and Losses in IPL {year}</h2>
+          <YearSlider onChange={handleSliderChange} year={year} />
+        </div>
         <Plot
         data={[
             {
@@ -61,7 +64,6 @@ function PopulationPyramid()
             }
         ]}
         layout={{
-            title: 'Team Wins and Losses',
             barmode: 'relative',
             bargap: 0.1,
             xaxis: {

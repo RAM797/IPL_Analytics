@@ -26,6 +26,7 @@ function GroupedBarChart() {
 
   return (
     <div>
+        <h2>Grouped Barchart of IPL Championships and Playoffs</h2>
         <Plot
         data={[
             {
@@ -44,7 +45,6 @@ function GroupedBarChart() {
             }
         ]}
         layout={{
-            title: 'IPL Teams: Championships and Playoff Appearances',
             barmode: 'group',
             xaxis: {
               title: 'Teams',

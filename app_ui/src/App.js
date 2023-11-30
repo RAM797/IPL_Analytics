@@ -1,6 +1,6 @@
 import React, { useState} from 'react';
 import Boxplot from './boxplot';
-import BarChartWrapper from './barchart';
+import BarChart from './barchart';
 import LineGraph from './linegraph';
 import ScatterPlotMatrix from './scatterplot';
 import GroupedBarChart from './groupedBarchart';
@@ -11,6 +11,7 @@ import './App.css';
 import Piechart from './piechart';
 import Donutchart from './donutchart';
 import HeatMap from './heatmap';
+import logo from './IPL_logo.jpeg';
 
 function App() {
   const [activeTab, setActiveTab] = useState('Player Stats');
@@ -18,8 +19,10 @@ function App() {
   return (
     <div className="App">
       <header>
-      {/* <img src = {require('./IPL_logo.jpeg')} alt="IPL Logo" width="30" height="20"/> */}
-        <h1>IPL Analytics</h1>
+        <div>
+          <img src = {logo} alt="IPL logo"/>
+          <h1>IPL Analytics</h1>
+        </div>
       </header>
       <div className="tabs">
         <button
@@ -47,8 +50,6 @@ function App() {
         {activeTab === 'Team Stats' && <TeamStatsGrid />}
         {activeTab === 'Match Stats' && <MatchStatsGrid />}
       </div>
-      <link rel="stylesheet" type="text/css" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" />
-      <h6>Made with <i class="icon ion-heart"></i> using chatGPT</h6>
     </div>
   );
 }
@@ -58,32 +59,61 @@ export function PlayerStatsGrid(){
   return(
     <div>
       <div className='grid-container'>
+      <div className='grid-item'>
         <Boxplot/>
-        <BarChartWrapper/>
+      </div> 
+      <div className='grid-item'>
+        <BarChart/>
       </div>
-    <LineGraph/>
-    <ScatterPlotMatrix/>
     </div>
+    <div className = 'grid-container'>
+      <div className='grid-item'>
+        <LineGraph/>
+      </div>
+      <div className='grid-item'>
+        <ScatterPlotMatrix/>
+      </div>
+    </div>
+  </div>
   );
 }
 
 export function TeamStatsGrid(){
   return(
     <div>
-      <GroupedBarChart/>
-      <PopulationPyramid/>
-      <TreeMap/>
-      <BubbleChart/>
+      <div className = 'grid-container'>
+        <div className = 'grid-item'>
+          <GroupedBarChart/>
+        </div>
+        <div className='grid-item'>
+          <PopulationPyramid/>
+        </div>
+      </div>
+      <div className = 'grid-container'>
+        <div className = 'grid-item'>
+          <TreeMap/>
+        </div>
+        <div className = 'grid-item'>
+          <BubbleChart/>
+        </div>
+      </div>
     </div>
+
   );
 }
   
 function MatchStatsGrid() {
   return(
-    <div>
-      <Piechart/>
-      <Donutchart/>
-      <HeatMap/>
+    <div className='grid-container3'>
+      <div className = 'grid-item'>
+        <Piechart/>
+      </div>
+      <div className='grid-item'>
+        <Donutchart/>
+      </div>
+      <div className='grid-item'>
+        <HeatMap/>
+      </div>
     </div>
   );
 }

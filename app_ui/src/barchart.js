@@ -1,123 +1,111 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Plot  from 'react-plotly.js';
+import Plot from 'react-plotly.js';
 import YearSlider from './yearSlider';
 
-function BarChartWrapper() {
+function BarChart() {
+  const [year, setYear] = useState(2008);
+  const [data, setData] = useState([]);
+  const [showWicketTakers, setShowWicketTakers] = useState(false);
 
-    const [year, setYear] = useState(2008);
-    const [data, setData] = useState([]);
-    const [showWicketTakers, setShowWicketTakers] = useState(false);
+  const teamColors = {'Mumbai Indians': 'rgb((0, 75, 160))',
+    'Chennai Super Kings': 'rgb((255, 255, 60))',
+    'Kolkata Knight Riders': 'rgb((46, 8, 84))',
+    'Sunrisers Hyderabad': 'rgb((255, 130, 42))',
+    'Rajasthan Royals': 'rgb((255, 192, 203))',
+    'Royal Challengers Bangalore': 'rgb((236, 28, 36))',
+    'Delhi Capitals': 'rgb((0, 0, 139))',
+    'Punjab Kings': 'rgb((220, 221, 223))',
+    'Gujarat Titans': 'rgb((27, 33, 51))',
+    'Lucknow Super Giants': 'rgb((129, 188, 100))',
+    'Kings XI Punjab': 'rgb((220, 221, 223))',
+    'Delhi Daredevils': 'rgb((0, 0, 139))',
+    'Rising Pune Supergiant': 'rgb((158, 52, 149))',
+    'Rising Pune Supergiants': 'rgb((158, 52, 149))',
+    'Pune Warriors': 'rgb((0, 0, 0))',
+    'Deccan Chargers': 'rgb((100, 136, 180))',
+    'Kochi Tuskers Kerala': 'rgb((128, 0, 128))',
+    'Gujarat Lions': 'rgb((255, 165, 0))'};
    
-    const toggleData = () => {
-      setShowWicketTakers(!showWicketTakers);
-    };
-  
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          let response
-          // console.log(showWicketTakers);
-          if (showWicketTakers) {
-            // Fetch data for wicket takers
-            response = await axios.get(`http://127.0.0.1:5000/top_wicket_takers?year=${year}`);
-          } else {
-            // Fetch data for run scorers
-            response = await axios.get(`http://127.0.0.1:5000/top_run_scorers?year=${year}`);
-          }
-          setData(response.data);
-        } catch (error) {
-          console.error('Error fetching data', error);
-        }
-      };
-      
-      fetchData();
-    }, [showWicketTakers,year]);
-  
-    const players = data.map(item => item.player);
-    let metric, values
-    if (showWicketTakers)
-    {
-      values  = data.map(item => item.wickets);
-      metric = "wickets";
-    }
-    else
-    {
-      values = data.map(item => item.runs);
-      metric = "runs";
-    }
-    // const colors = players.map(() => `#${Math.floor(Math.random()*16777215).toString(16)}`);
-    const interpolateColor = (value, min, max) => {
-      const ratio = (value - min) / (max - min);
-      // Interpolate between red (255,0,0) and yellow (255,255,0)
-      const g = 220 - Math.round(255 * ratio);
-      const b = 30;
-      return `rgb(225,${g},${b})`;
-    };
-  
-    // Calculate min and max for runs to scale the colors appropriately
-    const minValues = Math.min(...values);
-    const maxValues = Math.max(...values);
-  
-    // Assign a color to each bar
-    const colors = values.map(value => interpolateColor(value, minValues, maxValues));
-    const handleSliderChange = (event, newValue) => {
-      setYear(newValue);
-    };
-    return (
-      <div>
-        
-        {showWicketTakers ? (
-            <h2>Barchart of Top Wicket Takers in IPL {year}</h2>
-          ): 
-          (
-            <h2>Barchart of Top Run Scorers in IPL {year}</h2>
-          )}
-      
-        <div>
-          <YearSlider onChange={handleSliderChange} year={year} />
-          <button onClick={toggleData} >
-            {showWicketTakers ? 'Show Run Scorers' : 'Show Wicket Takers'}
-          </button>
-        </div>
-        <BarChart
-            players = {players}
-            metric =  {metric}
-            values = {values}
-            colors = {colors}/>
-      </div>
-    );
-  
-    
-  }
-  
-  function BarChart({players, metric, values,  colors})
-  {
-    return(
-      <Plot
-        data={[
-          {
-            x: players,
-            y: values,
-            type: 'bar',
-            name: 'top players',
-            marker: {
-              color: colors, // Apply the colors here
-            },
-          },
-        ]}
-        layout={{ 
-          width: 600, 
-          height: 450, 
-          xaxis: {
-          title: 'Cricket Player',
-          automargin: true,
-        },
-        yaxis: {
-          title: {metric},
-        } }}
-      />
-    );
-  }
 
-  export default BarChartWrapper;
+  const toggleData = () => {
+    setShowWicketTakers(!showWicketTakers);
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let response;
+        if (showWicketTakers) {
+          response = await axios.get(`http://127.0.0.1:5000/top_wicket_takers?year=${year}`);
+        } else {
+          response = await axios.get(`http://127.0.0.1:5000/top_run_scorers?year=${year}`);
+        }
+        setData(response.data);
+      } catch (error) {
+        console.error('Error fetching data', error);
+      }
+    };
+
+    fetchData();
+  }, [showWicketTakers, year]);
+
+  // Function to group data by team
+  const groupDataByTeam = () => {
+    const teamData = {};
+    data.forEach(d => {
+      const team = d.team;
+      if (!teamData[team]) {
+        teamData[team] = { players: [], stats: [], color: teamColors[team] };
+      }
+      teamData[team].players.push(d.player);
+      teamData[team].stats.push(showWicketTakers ? d.wickets : d.runs);
+    });
+    return Object.keys(teamData).map(team => ({
+      x: teamData[team].players,
+      y: teamData[team].stats,
+      type: 'bar',
+      name: team,
+      marker: { color: teamData[team].color },
+    }));
+  };
+
+  let plotData = groupDataByTeam();
+  let x_axis = showWicketTakers ? 'Bowler' : 'Batsman';
+  let y_axis = showWicketTakers ? 'Wickets' : 'Runs';
+  let title = showWicketTakers ? 'Top Wicket Takers' : 'Top Run Scorers';
+
+  const layout = {
+    barmode: 'group',
+    showlegend: true,
+    legend: {
+      title: { text: 'Teams' },
+      orientation: 'h',
+      x: 0.5,
+      xanchor: 'center',
+      y: 1.1,
+      yanchor: 'bottom'
+    },
+    xaxis: { title: x_axis },
+    yaxis: { title: y_axis },
+  };
+
+  const handleSliderChange = (event, newValue) => {
+    setYear(newValue);
+  };
+
+  return (
+    <div>
+      <h2>{title} in IPL {year}</h2>
+      <div>
+        <YearSlider onChange={handleSliderChange} year={year} />
+        <button onClick={toggleData}>
+          {showWicketTakers ? 'Show Run Scorers' : 'Show Wicket Takers'}
+        </button>
+      </div>
+      <Plot data={plotData} layout={layout} />
+    </div>
+  );
+}
+
+export default BarChart;

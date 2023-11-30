@@ -116,7 +116,6 @@ function ScatterPlotMatrix() {
     }
     // Layout configuration
     const layout = {
-        title: 'Scatterplot Matrix',
         height: 600,
         width: 600
     };

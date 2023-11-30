@@ -62,16 +62,19 @@ function BubbleChart()
 
 return (
     <div>
-        <YearSlider onChange={handleSliderChange} year={year} />
+        <div>
+          <h2>Bubble Chart of team performances in IPL {year}</h2>
+          <YearSlider onChange={handleSliderChange} year={year} />
+        </div>
         <Plot
             data={plotData}
             layout={{
-                title: 'Team Performance',
                 xaxis: { title: 'Wickets Taken' },
                 yaxis: { title: 'Runs Scored' },
                 showlegend: true
             }}
         />
+        <h6>Note: Bubble size indicates no. of wins by the team</h6>
     </div>
 );
 

@@ -61,11 +61,16 @@ function TreeMap(){
   
       return (
         <div>
-            <YearSlider onChange={handleSliderChange} year={year} />
+            <div>
+              <h2>Treemap of Boundaries in IPL {year}</h2>
+              <YearSlider onChange={handleSliderChange} year={year} />  
+            </div>
+            
             <Plot
             data={plotData}
-            layout={{ title: 'Cricket Teams Boundaries Treemap' }}
+            layout={{ }}
             />
+            <h6>Note: Boundaries include 4 and 6 runs</h6>
         </div>
       );
     }

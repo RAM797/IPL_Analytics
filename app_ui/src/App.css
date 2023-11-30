@@ -28,6 +28,7 @@ button {
   cursor: pointer;
   border: 2px solid transparent; /* Add a transparent border to all buttons */
   transition: border-color 0.2s; /* Smooth transition for border color */
+  transition: box-shadow 0.2s, transform 0.2s;
 }
 
 button:hover {
@@ -36,7 +37,9 @@ button:hover {
 
 /* Style the active tab with a white border */
 button.active {
-  border-color: red;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+  transform: translateY(2px);
+  background-color: #4CAF50;
 }
 
 .visualization-grids {
@@ -59,14 +62,20 @@ button.active {
   width: 100%; /* Take full width of the parent */
   /* Add additional styling as needed */
 }
- /* .grid-item {
+ .grid-item {
   flex: 0 1 calc(50% - 20px); 
   margin: 10px;
   border: 1px solid #ccc;
   padding: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}  */
-
+} 
+.grid-container3 {
+  display: grid;
+  grid-template-columns: 0.75fr 0.8fr 1fr; /* Two equal columns */
+  gap: 5px; /* Optional: space between columns */
+  width: 100%; /* Take full width of the parent */
+  /* Add additional styling as needed */
+}
 /* .grid-item {
   flex: 0 1 calc(50% - 10px); /* Two items per row with some spacing 
   margin: 10px;
@@ -80,3 +89,19 @@ canvas {
 }
 
 
+header img {
+  height: 60px;
+  width: 100 px; 
+  margin-right: 20px;/* Example: Set the height of the logo */
+  /* Other styles */
+}
+
+header div{
+  display: flex; /* Use flexbox to layout children */
+  align-items: center; /* Center children vertically */
+  justify-content: center;
+}
+
+header {
+  background-color: rgb(19,66,115);
+}

@@ -36,7 +36,7 @@ function HeatMap() {
   
     return (
       <div>
-        <h2>Runs Scored at Different Venues by Teams</h2>
+        <h2>Heat Map: IPL Team Runs by Venue in IPL {year}</h2>
         <YearSlider onChange={handleSliderChange} year={year} />
         {data && (
           <Plot
@@ -52,11 +52,20 @@ function HeatMap() {
               },
             ]}
             layout={{
-              width: 500,
-              height: 400,
-              xaxis: { title: 'Teams' },
-              yaxis: { title: 'Venues' },
-              title: 'Dismisal Donut Chart',
+              width: 550,
+              height: 500,
+              xaxis: {
+                title: 'Teams',
+                tickangle: 45, // Adjust angle
+                automargin: true, // Automatically adjust margin
+                tickfont: { size: 10 } // Adjust font size if necessary
+              },
+              yaxis: {
+                title: 'venue',
+                automargin: true, // Automatically adjust margin
+                tickfont: { size: 10 } // Adjust font size if necessary
+              },
+              
             }}
           />
         )}

@@ -4,6 +4,7 @@ import pickle
 app = Flask(__name__)
 CORS(app)
 # Sample data (replace this with your actual data)
+
 player_stats_path = '../data/player_stats/'
 team_stats_path = '../data/team_stats/'
 season_stats_path = '../data/season_stats/'
@@ -12,7 +13,8 @@ season_stats_path = '../data/season_stats/'
 def bowler_economy():
     year = int(request.args.get('year'))
     response = []
-    with open(player_stats_path+'bowler_metrics.pkl','rb') as bef:
+
+    with open(player_stats_path+'bowler_stats.pkl','rb') as bef:
         bowler_stats = pickle.load(bef)
         if year not in bowler_stats:
             return jsonify({'error': f'Data not available for the year {year}'}), 404
@@ -26,13 +28,14 @@ def bowler_economy():
 def top_run_scorers():
     year = int(request.args.get('year'))
     response = None
-    with open(player_stats_path+'batsman_metrics.pkl','rb') as tsf:
+    with open(player_stats_path+'batsman_stats.pkl','rb') as tsf:
         batsman_stats = pickle.load(tsf)
         if year not in batsman_stats:
             return jsonify({'error': f'Data not available for the year {year}'}), 404
         runs = {p : batsman_stats[year][p]['runs'] for p in batsman_stats[year]}
+        teams = {p : batsman_stats[year][p]['team'] for p in batsman_stats[year]}
         top5 = sorted(runs.keys(), key  = lambda x: runs[x], reverse = True)[:5]
-        response = [{'player': p, 'runs' : runs[p]} for p in top5]
+        response = [{'player': p, 'runs' : runs[p], 'team': teams[p]} for p in top5]
         print(response)
     return jsonify(response)
 
@@ -41,13 +44,14 @@ def top_run_scorers():
 def top_wicket_takers():
     year = int(request.args.get('year'))
     response = None
-    with open(player_stats_path+'bowler_metrics.pkl','rb') as tsf:
+    with open(player_stats_path+'bowler_stats.pkl','rb') as tsf:
         bowler_stats = pickle.load(tsf)
         if year not in bowler_stats:
             return jsonify({'error': f'Data not available for the year {year}'}), 404
         wickets = {p : bowler_stats[year][p]['wickets_taken'] for p in bowler_stats[year]}
+        teams = {p : bowler_stats[year][p]['team'] for p in bowler_stats[year]}
         top5 = sorted(wickets.keys(), key  = lambda x: wickets[x], reverse = True)[:5]
-        response = [{'player': p, 'wickets' : wickets[p]} for p in top5]
+        response = [{'player': p, 'wickets' : wickets[p], 'team': teams[p]} for p in top5]
     return jsonify(response)
     
 # scatterplot matrix data
@@ -55,7 +59,7 @@ def top_wicket_takers():
 def bowler_metrics():
     year = int(request.args.get('year'))
     response = None
-    with open(player_stats_path+'bowler_metrics.pkl','rb') as tsf:
+    with open(player_stats_path+'bowler_stats.pkl','rb') as tsf:
         bowler_stats = pickle.load(tsf)
         if year not in bowler_stats:
             return jsonify({'error': f'Data not available for the year {year}'}), 404
@@ -66,7 +70,7 @@ def bowler_metrics():
 def batsman_metrics():
     year = int(request.args.get('year'))
     response = None
-    with open(player_stats_path+'batsman_metrics.pkl','rb') as tsf:
+    with open(player_stats_path+'batsman_stats.pkl','rb') as tsf:
         batsman_stats = pickle.load(tsf)
         if year not in batsman_stats:
             return jsonify({'error': f'Data not available for the year {year}'}), 404

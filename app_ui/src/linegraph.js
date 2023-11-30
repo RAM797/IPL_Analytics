@@ -49,7 +49,6 @@ function LineGraph()
         layout={{
           width: 720,
           height: 440,
-          title: 'Strike Rate of Players Across Matches',
           color: colors,
           xaxis: {
             title: 'Match'

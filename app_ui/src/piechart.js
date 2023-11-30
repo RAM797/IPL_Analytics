@@ -26,7 +26,7 @@ function Piechart() {
   
     return (
       <div>
-        <h2>Piechart of wins {year}</h2>
+        <h2>Piechart of wins by 1st/2nd Bat in IPL {year}</h2>
         <YearSlider onChange={handleSliderChange} year={year} />
         {data && (
             <Plot
@@ -37,7 +37,7 @@ function Piechart() {
                     type: 'pie',
                 },
               ]}
-              layout={{ width: 500, height: 400, title: 'Wins Piechart' }}
+              layout={{ width: 500, height: 400 }}
             />
           )}
       </div>
