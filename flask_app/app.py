@@ -4,14 +4,15 @@ import pickle
 app = Flask(__name__)
 CORS(app)
 # Sample data (replace this with your actual data)
-player_stats = '../data/player_stats'
+player_stats_path = '../data/player_stats'
 team_stats_path = '../data/team_stats/'
+season_stats_path = '../data/season_stats/'
 # boxplot data
 @app.route('/bowler_economy', methods=['GET'])
 def bowler_economy():
     year = int(request.args.get('year'))
     response = []
-    with open(player_stats+'bowler_metrics.pkl','rb') as bef:
+    with open(player_stats_path+'bowler_metrics.pkl','rb') as bef:
         bowler_stats = pickle.load(bef)
         if year not in bowler_stats:
             return jsonify({'error': f'Data not available for the year {year}'}), 404
@@ -25,7 +26,7 @@ def bowler_economy():
 def top_run_scorers():
     year = int(request.args.get('year'))
     response = None
-    with open(player_stats+'batsman_metrics.pkl','rb') as tsf:
+    with open(player_stats_path+'batsman_metrics.pkl','rb') as tsf:
         batsman_stats = pickle.load(tsf)
         if year not in batsman_stats:
             return jsonify({'error': f'Data not available for the year {year}'}), 404
@@ -40,7 +41,7 @@ def top_run_scorers():
 def top_wicket_takers():
     year = int(request.args.get('year'))
     response = None
-    with open(player_stats+'bowler_metrics.pkl','rb') as tsf:
+    with open(player_stats_path+'bowler_metrics.pkl','rb') as tsf:
         bowler_stats = pickle.load(tsf)
         if year not in bowler_stats:
             return jsonify({'error': f'Data not available for the year {year}'}), 404
@@ -54,7 +55,7 @@ def top_wicket_takers():
 def bowler_metrics():
     year = int(request.args.get('year'))
     response = None
-    with open(player_stats+'bowler_metrics.pkl','rb') as tsf:
+    with open(player_stats_path+'bowler_metrics.pkl','rb') as tsf:
         bowler_stats = pickle.load(tsf)
         if year not in bowler_stats:
             return jsonify({'error': f'Data not available for the year {year}'}), 404
@@ -65,7 +66,7 @@ def bowler_metrics():
 def batsman_metrics():
     year = int(request.args.get('year'))
     response = None
-    with open(player_stats+'batsman_metrics.pkl','rb') as tsf:
+    with open(player_stats_path+'batsman_metrics.pkl','rb') as tsf:
         batsman_stats = pickle.load(tsf)
         if year not in batsman_stats:
             return jsonify({'error': f'Data not available for the year {year}'}), 404
@@ -77,7 +78,7 @@ def batsman_metrics():
 def top_strike_tates():
     response = None
     year = int(request.args.get('year'))
-    with open(player_stats+'top_strike_rates.pkl','rb') as bef:
+    with open(player_stats_path+'top_strike_rates.pkl','rb') as bef:
         strike_rates = pickle.load(bef)
         if year not in strike_rates:
             return jsonify({'error': f'Data not available for the year {year}'}), 404
@@ -127,6 +128,39 @@ def all_team_stats():
             return jsonify({'error': f'Data not available for the year {year}'}), 404
         response = all_team_stats[year]
     return jsonify(response)
+@app.route('/dismissal_metrics', methods=['GET'])
+def dismissal_metrics():
+    response = None
+    year = int(request.args.get('year'))
+    with open(season_stats_path+'dismissal_metrics.pkl','rb') as dm:
+        dismissal = pickle.load(dm)
+        if year not in dismissal:
+            return jsonify({'error': f'Data not available for the year {year}'}), 404
+        response = dismissal[year]
+    return jsonify(response)
+
+@app.route('/toss_metrics', methods=['GET'])
+def toss_metrics():
+    response = None
+    year = int(request.args.get('year'))
+    with open(season_stats_path+'toss_metrics.pkl','rb') as tm:
+        toss = pickle.load(tm)
+        if year not in toss:
+            return jsonify({'error': f'Data not available for the year {year}'}), 404
+        response = toss[year]
+    return jsonify(response)
+
+@app.route('/venue_metrics', methods=['GET'])
+def venue_metrics():
+    response = None
+    year = int(request.args.get('year'))
+    with open(season_stats_path+'venue_metrics.pkl','rb') as vm:
+        venue = pickle.load(vm)
+        if year not in venue:
+            return jsonify({'error': f'Data not available for the year {year}'}), 404
+        response = venue[year]
+    return jsonify(response)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
