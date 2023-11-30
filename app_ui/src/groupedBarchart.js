@@ -55,7 +55,6 @@ function GroupedBarChart() {
             yaxis: { title: 'Count' },
             margin: { l: 50, r: 50, t: 50, b: 100 }, // Adjust bottom margin
           }}
-        style={{ width: "100%", height: "100%" }}
         />
     </div>
   );

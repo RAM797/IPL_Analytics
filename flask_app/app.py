@@ -4,8 +4,8 @@ import pickle
 app = Flask(__name__)
 CORS(app)
 # Sample data (replace this with your actual data)
-player_stats = '/Users/ramsankar/Documents/courses/CSCE_679/IPL_Analytics/data/player_stats/'
-team_stats = '/Users/ramsankar/Documents/courses/CSCE_679/IPL_Analytics/data/team_stats/'
+player_stats = '../data/player_stats'
+team_stats_path = '../data/team_stats/'
 # boxplot data
 @app.route('/bowler_economy', methods=['GET'])
 def bowler_economy():
@@ -89,8 +89,43 @@ def top_strike_tates():
 @app.route('/championships', methods=['GET'])
 def championships():
     response = {}
-    with open(team_stats +'championships.pkl','rb') as cp:
+    with open(team_stats_path +'championships.pkl','rb') as cp:
         response = pickle.load(cp)
+    return jsonify(response)
+
+@app.route('/win_loss', methods=['GET'])
+def win_loss():
+    response = {}
+    year = int(request.args.get('year'))
+    with open(team_stats_path+'winloss.pkl','rb') as wl:
+        win_loss = pickle.load(wl)
+        if year not in win_loss:
+            return jsonify({'error': f'Data not available for the year {year}'}), 404
+        response = win_loss[year]
+    return jsonify(response)
+
+@app.route('/boundaries', methods=['GET'])
+def boundaries():
+    response = {}
+    year = int(request.args.get('year'))
+    with open(team_stats_path+'team_stats.pkl','rb') as ts:
+        team_stats = pickle.load(ts)
+        if year not in team_stats:
+            return jsonify({'error': f'Data not available for the year {year}'}), 404
+        data = team_stats[year]
+        sorted_teams = sorted(data.keys(), key = lambda x: data[x]['boundaries'], reverse = True)
+        response = [{'team': team, 'boundaries': data[team]['boundaries']} for team  in sorted_teams]
+    return jsonify(response)
+
+@app.route('/all_team_stats', methods=['GET'])
+def all_team_stats():
+    year = int(request.args.get('year'))
+    response = {}
+    with open(team_stats_path +'team_stats.pkl','rb') as ts:
+        all_team_stats = pickle.load(ts)
+        if year not in all_team_stats:
+            return jsonify({'error': f'Data not available for the year {year}'}), 404
+        response = all_team_stats[year]
     return jsonify(response)
 
 if __name__ == '__main__':

@@ -4,6 +4,9 @@ import BarChartWrapper from './barchart';
 import LineGraph from './linegraph';
 import ScatterPlotMatrix from './scatterplot';
 import GroupedBarChart from './groupedBarchart';
+import PopulationPyramid from './populationPyramid';
+import TreeMap from './treemap';
+import BubbleChart from './bubbleChart';
 import './App.css';
 
 function App() {
@@ -65,6 +68,9 @@ export function TeamStatsGrid(){
   return(
     <div>
       <GroupedBarChart/>
+      <PopulationPyramid/>
+      <TreeMap/>
+      <BubbleChart/>
     </div>
   );
 }
