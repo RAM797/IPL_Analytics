@@ -8,6 +8,9 @@ import PopulationPyramid from './populationPyramid';
 import TreeMap from './treemap';
 import BubbleChart from './bubbleChart';
 import './App.css';
+import Piechart from './piechart';
+import Donutchart from './donutchart';
+import HeatMap from './heatmap';
 
 function App() {
   const [activeTab, setActiveTab] = useState('Player Stats');
@@ -76,7 +79,13 @@ export function TeamStatsGrid(){
 }
   
 function MatchStatsGrid() {
-  // Implement the Match Stats grid here
+  return(
+    <div>
+      <Piechart/>
+      <Donutchart/>
+      <HeatMap/>
+    </div>
+  );
 }
 
 export default App;

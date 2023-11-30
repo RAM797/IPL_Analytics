@@ -4,7 +4,7 @@ import pickle
 app = Flask(__name__)
 CORS(app)
 # Sample data (replace this with your actual data)
-player_stats_path = '../data/player_stats'
+player_stats_path = '../data/player_stats/'
 team_stats_path = '../data/team_stats/'
 season_stats_path = '../data/season_stats/'
 # boxplot data
