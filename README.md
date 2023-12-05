@@ -6,6 +6,6 @@
 * python app.py
 ### 2nd terminal window
 * cd IPL_Analytics/app_ui
-*npm install
+* npm install
 * npm start
 
